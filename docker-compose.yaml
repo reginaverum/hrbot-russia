@@ -6,12 +6,17 @@ services:
     ports:
       - 8000:8000
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
     command: sh ./entrypoint.sh
     volumes:
       - ./horilla:/app/horilla
       - ./media:/app/media
+      - ./recruitment:/app/recruitment
+      - ./hrbot:/app/hrbot
+      - ./horilla_api:/app/horilla_api
     depends_on:
       db:
         condition: service_healthy

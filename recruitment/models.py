@@ -1029,6 +1029,41 @@ FORMATS = [
 ]
 
 
+class AIScreeningResult(HorillaModel):
+    """
+    Результат AI-скрининга резюме кандидата через YandexGPT.
+    Создаётся при вызове endpoint POST /api/recruitment/candidate/{id}/ai-screen/.
+    """
+
+    candidate_id = models.OneToOneField(
+        Candidate,
+        on_delete=models.CASCADE,
+        related_name="ai_screening",
+        verbose_name=_("Candidate"),
+    )
+    score = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        verbose_name=_("AI Score"),
+        help_text=_("Relevance score from 0 to 100 assigned by YandexGPT"),
+    )
+    matched_skills = models.JSONField(
+        default=list, blank=True, verbose_name=_("Matched Skills")
+    )
+    missing_skills = models.JSONField(
+        default=list, blank=True, verbose_name=_("Missing Skills")
+    )
+    summary = models.TextField(blank=True, verbose_name=_("AI Summary"))
+    screened_at = models.DateTimeField(auto_now=True, verbose_name=_("Screened At"))
+
+    class Meta:
+        verbose_name = _("AI Screening Result")
+        verbose_name_plural = _("AI Screening Results")
+
+    def __str__(self):
+        return f"{self.candidate_id} — AI score: {self.score}"
+
+
 class CandidateDocumentRequest(HorillaModel):
     title = models.CharField(max_length=100)
     candidate_id = models.ManyToManyField(Candidate)
